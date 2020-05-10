@@ -20,30 +20,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	createBoard();
 
+	let colorBeingDragged;
+	let colorBeingReplace;
+	let squareIdBeingDragged;
+	let squareIdBeingReplaced;
+
 	//dragable feature
 	squares.forEach((square) => square.addEventListener('dragstart', dragStart));
 	squares.forEach((square) => square.addEventListener('dragend', dragEnd));
 	squares.forEach((square) => square.addEventListener('dragover', dragOver));
 	squares.forEach((square) => square.addEventListener('dragenter', dragEnter));
 	squares.forEach((square) => square.addEventListener('dragleave', dragLeave));
-	squares.forEach((square) => square.addEventListener('dragdrop', dragDrop));
+	squares.forEach((square) => square.addEventListener('drop', dragDrop));
 
 	function dragStart() {
-		console.log(this.id, 'dragStart');
+		colorBeingDragged = this.style.backgroundColor;
+		squareIdBeingDragged = parseInt(this.id);
+		console.log(this.id, colorBeingDragged, 'dragStart');
 	}
 	function dragEnd() {
 		console.log(this.id, 'dragEnd');
 	}
-	function dragOver() {
+	function dragOver(e) {
+		e.preventDefault();
 		console.log(this.id, 'dragOver');
 	}
-	function dragEnter() {
+	function dragEnter(e) {
+		e.preventDefault();
 		console.log(this.id, 'dragEnter');
 	}
 	function dragLeave() {
 		console.log(this.id, 'dragLeave');
 	}
 	function dragDrop() {
-		console.log(this.id, 'dragDrop');
+		colorBeingReplace = this.style.backgroundColor;
+		squareIdBeingReplaced = parseInt(this.id);
+		squares[squareIdBeingReplaced].style.backgroundColor = colorBeingDragged;
+		squares[squareIdBeingDragged].style.backgroundColor = colorBeingReplace;
+		console.log(this.id, colorBeingReplace, 'dragDrop');
 	}
 });
