@@ -131,7 +131,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	checkRowsAndColumns();
 
+	//drop candies once some have been cleared
+	function moveDown() {
+		for (let i = 0; i < Math.pow(gridWidth, 2) - gridWidth - 1; i++) {
+			if (squares[i + gridWidth].style.backgroundColor === '') {
+				squares[i + gridWidth].style.backgroundColor = squares[i].style.backgroundColor;
+				squares[i].style.backgroundColor = '';
+			}
+		}
+		for (let i = 0; i < gridWidth; i++) {
+			if (squares[i].style.backgroundColor === '')
+				squares[i].style.backgroundColor = getCandyColor();
+		}
+	}
+
 	window.setInterval(() => {
+		moveDown();
 		checkRowsAndColumns();
 	}, 100);
 });
