@@ -6,10 +6,15 @@ document.addEventListener('DOMContentLoaded', () => {
 	let score = 0;
 
 	//create board
+
+	function getCandyColor() {
+		return candyColor[Math.floor(Math.random() * candyColor.length)];
+	}
+
 	function createBoard() {
 		for (let i = 0; i < gridWidth * gridWidth; i++) {
 			const square = document.createElement('div');
-			let randomColor = candyColor[Math.floor(Math.random() * candyColor.length)];
+			let randomColor = getCandyColor();
 			square.setAttribute('draggable', true);
 			square.setAttribute('id', i);
 			square.style.backgroundColor = randomColor;
@@ -43,8 +48,8 @@ document.addEventListener('DOMContentLoaded', () => {
 		const validMoves = [
 			squareIdBeingDragged + 1,
 			squareIdBeingDragged - 1,
-			squareIdBeingDragged - gridWidth,
 			squareIdBeingDragged + gridWidth,
+			squareIdBeingDragged - gridWidth,
 		];
 		let validMove = validMoves.includes(squareIdBeingReplaced);
 		if (!validMove && squareIdBeingReplaced) {
@@ -75,7 +80,14 @@ document.addEventListener('DOMContentLoaded', () => {
 	//Checking for matches
 
 	function checkRowForNum(num) {
+		let invalidMoves = [];
+		for (let i = 1; i < gridWidth; i++) {
+			for (let j = 1; j < num; j++) {
+				invalidMoves.push(i * gridWidth - j);
+			}
+		}
 		for (let i = 0; i < Math.pow(gridWidth, 2) - (num - 1); i++) {
+			if (invalidMoves.includes(i)) continue;
 			let rowOfNum = [];
 			for (let j = i; j < i + num; j++) {
 				rowOfNum.push(j);
@@ -86,6 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				rowOfNum.forEach((index) => {
 					squares[index].style.backgroundColor = '';
 				});
+				score += 1;
 			}
 		}
 	}
@@ -102,6 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				columnOfNum.forEach((index) => {
 					squares[index].style.backgroundColor = '';
 				});
+				score += 1;
 			}
 		}
 	}
@@ -116,4 +130,8 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 
 	checkRowsAndColumns();
+
+	window.setInterval(() => {
+		checkRowsAndColumns();
+	}, 100);
 });
