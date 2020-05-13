@@ -1,23 +1,31 @@
 document.addEventListener('DOMContentLoaded', () => {
 	const candyGrid = document.querySelector('.candyGrid');
+	const scoreDiv = document.getElementById('score');
 	const gridWidth = 8;
 	const squares = [];
-	const candyColor = ['red', 'yellow', 'orange', 'purple', 'green', 'blue'];
+	const candyImages = [
+		'url(images/red-candy.png)',
+		'url(images/yellow-candy.png)',
+		'url(images/orange-candy.png)',
+		'url(images/purple-candy.png)',
+		'url(images/green-candy.png)',
+		'url(images/blue-candy.png)',
+	];
 	let score = 0;
 
 	//create board
 
-	function getCandyColor() {
-		return candyColor[Math.floor(Math.random() * candyColor.length)];
+	function getCandyImage() {
+		const candy = candyImages[Math.floor(Math.random() * candyImages.length)];
+		return candy;
 	}
 
 	function createBoard() {
 		for (let i = 0; i < gridWidth * gridWidth; i++) {
 			const square = document.createElement('div');
-			let randomColor = getCandyColor();
 			square.setAttribute('draggable', true);
 			square.setAttribute('id', i);
-			square.style.backgroundColor = randomColor;
+			square.style.backgroundImage = getCandyImage();
 			candyGrid.appendChild(square);
 			squares.push(square);
 		}
@@ -39,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	squares.forEach((square) => square.addEventListener('drop', dragDrop));
 
 	function dragStart() {
-		colorBeingDragged = this.style.backgroundColor;
+		colorBeingDragged = this.style.backgroundImage;
 		squareIdBeingDragged = parseInt(this.id);
 		console.log(this.id, colorBeingDragged, 'dragStart');
 	}
@@ -53,8 +61,8 @@ document.addEventListener('DOMContentLoaded', () => {
 		];
 		let validMove = validMoves.includes(squareIdBeingReplaced);
 		if (!validMove && squareIdBeingReplaced) {
-			squares[squareIdBeingReplaced].style.backgroundColor = colorBeingReplace;
-			squares[squareIdBeingDragged].style.backgroundColor = colorBeingDragged;
+			squares[squareIdBeingReplaced].style.backgroundImage = colorBeingReplace;
+			squares[squareIdBeingDragged].style.backgroundImage = colorBeingDragged;
 		}
 		checkRowsAndColumns();
 	}
@@ -70,10 +78,10 @@ document.addEventListener('DOMContentLoaded', () => {
 		console.log(this.id, 'dragLeave');
 	}
 	function dragDrop() {
-		colorBeingReplace = this.style.backgroundColor;
+		colorBeingReplace = this.style.backgroundImage;
 		squareIdBeingReplaced = parseInt(this.id);
-		squares[squareIdBeingReplaced].style.backgroundColor = colorBeingDragged;
-		squares[squareIdBeingDragged].style.backgroundColor = colorBeingReplace;
+		squares[squareIdBeingReplaced].style.backgroundImage = colorBeingDragged;
+		squares[squareIdBeingDragged].style.backgroundImage = colorBeingReplace;
 		console.log(this.id, colorBeingReplace, 'dragDrop');
 	}
 
@@ -92,11 +100,11 @@ document.addEventListener('DOMContentLoaded', () => {
 			for (let j = i; j < i + num; j++) {
 				rowOfNum.push(j);
 			}
-			let decidedColor = squares[i].style.backgroundColor;
-			if (rowOfNum.every((index) => squares[index].style.backgroundColor === decidedColor)) {
+			let decidedColor = squares[i].style.backgroundImage;
+			if (rowOfNum.every((index) => squares[index].style.backgroundImage === decidedColor)) {
 				score += num;
 				rowOfNum.forEach((index) => {
-					squares[index].style.backgroundColor = '';
+					squares[index].style.backgroundImage = '';
 				});
 				score += 1;
 			}
@@ -109,11 +117,11 @@ document.addEventListener('DOMContentLoaded', () => {
 			for (let j = i; j < i + (num - 1) * gridWidth + 1; j += gridWidth) {
 				columnOfNum.push(j);
 			}
-			let decidedColor = squares[i].style.backgroundColor;
-			if (columnOfNum.every((index) => squares[index].style.backgroundColor === decidedColor)) {
+			let decidedColor = squares[i].style.backgroundImage;
+			if (columnOfNum.every((index) => squares[index].style.backgroundImage === decidedColor)) {
 				score += num;
 				columnOfNum.forEach((index) => {
-					squares[index].style.backgroundColor = '';
+					squares[index].style.backgroundImage = '';
 				});
 				score += 1;
 			}
@@ -134,19 +142,20 @@ document.addEventListener('DOMContentLoaded', () => {
 	//drop candies once some have been cleared
 	function moveDown() {
 		for (let i = 0; i < Math.pow(gridWidth, 2) - gridWidth - 1; i++) {
-			if (squares[i + gridWidth].style.backgroundColor === '') {
-				squares[i + gridWidth].style.backgroundColor = squares[i].style.backgroundColor;
-				squares[i].style.backgroundColor = '';
+			if (squares[i + gridWidth].style.backgroundImage === '') {
+				squares[i + gridWidth].style.backgroundImage = squares[i].style.backgroundImage;
+				squares[i].style.backgroundImage = '';
 			}
 		}
 		for (let i = 0; i < gridWidth; i++) {
-			if (squares[i].style.backgroundColor === '')
-				squares[i].style.backgroundColor = getCandyColor();
+			if (squares[i].style.backgroundImage === '')
+				squares[i].style.backgroundImage = getCandyImage();
 		}
 	}
 
 	window.setInterval(() => {
 		moveDown();
 		checkRowsAndColumns();
+		scoreDiv.innerHTML = `Score: ${score}`;
 	}, 100);
 });
